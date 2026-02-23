@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 // @ts-ignore
 import ReactMarkdown from 'react-markdown';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Github, Twitter, Linkedin, Mail } from 'lucide-react';
+import { ChevronDown, Github, Linkedin, Mail } from 'lucide-react';
 import readmeRaw from '../../../README.md?raw';
 import './About.css';
 
@@ -53,7 +53,7 @@ export const About: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: 'easeOut' }}
         >
-            <div title="About the Creator" defaultExpanded={true}>
+            <AccordionItem title="About the Creator" defaultExpanded={true}>
                 <div className="creator-profile">
                     <img
                         src="/images/about-pic.png"
@@ -75,7 +75,7 @@ export const About: React.FC = () => {
                         </div>
                     </div>
                 </div>
-            </div>
+            </AccordionItem>
 
             <AccordionItem title="Project README" defaultExpanded={false}>
                 <div className="markdown-content">
