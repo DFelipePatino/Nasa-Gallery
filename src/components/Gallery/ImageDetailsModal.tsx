@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import type { NasaImageItem } from '../../hooks/useNasaData';
@@ -9,7 +9,14 @@ interface ImageDetailsModalProps {
 }
 
 export const ImageDetailsModal: React.FC<ImageDetailsModalProps> = ({ item, onClose }) => {
-    // Close on escape key
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Escape') onClose();
@@ -18,105 +25,160 @@ export const ImageDetailsModal: React.FC<ImageDetailsModalProps> = ({ item, onCl
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [onClose]);
 
-    // Prevent body scroll when modal is open
     useEffect(() => {
         if (item) {
             document.body.style.overflow = 'hidden';
         } else {
             document.body.style.overflow = '';
         }
-        return () => {
-            document.body.style.overflow = '';
-        };
+        return () => { document.body.style.overflow = ''; };
     }, [item]);
 
     return (
         <AnimatePresence>
             {item && (
-                <div className="modal-overlay" style={{
-                    position: 'fixed',
-                    top: 0, left: 0, right: 0, bottom: 0,
-                    backgroundColor: 'rgba(0,0,0,0.7)',
-                    backdropFilter: 'blur(8px)',
-                    zIndex: 1000,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                }} onClick={onClose}>
+                <div
+                    className="modal-overlay"
+                    style={{
+                        position: 'fixed',
+                        top: 0, left: 0, right: 0, bottom: 0,
+                        backgroundColor: 'rgba(0,0,0,0.92)',
+                        backdropFilter: 'blur(15px)',
+                        zIndex: 1000,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: isMobile ? '0' : '40px',
+                        boxSizing: 'border-box'
+                    }}
+                    onClick={onClose}
+                >
                     <motion.div
-                        className="modal-content glass-panel"
+                        className="modal-content"
                         style={{
                             width: '100%',
-                            height: '100%',
+                            maxWidth: '1280px',
+                            // Use vh with a safe margin to ensure it NEVER leaves the screen
+                            height: isMobile ? '100%' : '80vh',
                             display: 'flex',
-                            flexDirection: 'row',
+                            flexDirection: isMobile ? 'column' : 'row',
+                            backgroundColor: '#0a0a0f',
+                            borderRadius: isMobile ? '0' : '24px',
                             overflow: 'hidden',
                             position: 'relative',
-                            backgroundColor: 'rgba(20, 20, 35, 0.85)',
-                            borderRadius: '0'
+                            boxShadow: '0 0 100px rgba(0,0,0,0.8)',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            boxSizing: 'border-box'
                         }}
-                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        transition={{ duration: 0.3, type: 'spring', damping: 25, stiffness: 300 }}
-                        onClick={(e) => e.stopPropagation()} // Prevent clicks inside from closing
+                        initial={isMobile ? { y: '100%' } : { opacity: 0, y: 20 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={isMobile ? { y: '100%' } : { opacity: 0 }}
                     >
+                        {/* ABSOLUTE CLOSE BUTTON */}
                         <button
                             onClick={onClose}
                             style={{
                                 position: 'absolute',
-                                top: '1rem',
-                                right: '1rem',
+                                top: '24px',
+                                right: '24px',
+                                zIndex: 50,
                                 background: 'rgba(0,0,0,0.5)',
-                                border: 'none',
+                                border: '1px solid rgba(255,255,255,0.2)',
                                 borderRadius: '50%',
-                                width: '40px',
-                                height: '40px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
+                                padding: '8px',
                                 cursor: 'pointer',
-                                color: 'white',
-                                zIndex: 10
+                                color: 'white'
                             }}
                         >
                             <X size={24} />
                         </button>
 
-                        <div className="modal-image-container" style={{ flex: '1.5', backgroundColor: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        {/* LEFT: IMAGE SECTION */}
+                        <div style={{
+                            flex: isMobile ? '0 0 40%' : '1.5',
+                            backgroundColor: '#000',
+                            position: 'relative',
+                            overflow: 'hidden',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}>
                             <img
                                 src={item.imageUrl}
                                 alt={item.title}
-                                style={{ width: '100%', height: '100%', objectFit: 'contain', maxHeight: '100vh' }}
+                                style={{
+                                    maxWidth: '100%',
+                                    maxHeight: '100%',
+                                    objectFit: 'contain'
+                                }}
                             />
                         </div>
 
-                        <div className="modal-info-container" style={{ flex: '1', padding: '2rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                            <h2 style={{ fontSize: '2rem', marginBottom: '0.5rem', lineHeight: '1.2' }}>{item.title}</h2>
+                        {/* RIGHT: INFO SECTION (Using CSS Grid to lock heights) */}
+                        <div style={{
+                            flex: '1',
+                            display: 'grid',
+                            gridTemplateRows: 'auto 1fr', // Header takes what it needs, body takes the rest
+                            height: '100%',
+                            minWidth: 0,
+                            backgroundColor: '#0d0d16'
+                        }}>
 
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', color: 'var(--text-secondary)', fontSize: '0.9rem', flexWrap: 'wrap' }}>
-                                <span>{new Date(item.date_created).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</span>
-                                {item.source && <span style={{ padding: '0.2rem 0.6rem', background: 'rgba(255,255,255,0.1)', borderRadius: '12px' }}>{item.source}</span>}
+                            {/* 1. LOCKED HEADER */}
+                            <div style={{
+                                padding: isMobile ? '20px' : '48px 48px 24px 48px',
+                                borderBottom: '1px solid rgba(255,255,255,0.05)'
+                            }}>
+                                <h2 style={{
+                                    fontSize: isMobile ? '1.5rem' : '2.5rem',
+                                    margin: 0,
+                                    color: '#fff',
+                                    fontWeight: 700,
+                                    lineHeight: 1.1,
+                                    wordBreak: 'break-word',
+                                    paddingRight: '40px' // Space for close button
+                                }}>
+                                    {item.title}
+                                </h2>
+                                <div style={{ marginTop: '16px', display: 'flex', gap: '12px', color: 'rgba(255,255,255,0.5)', fontSize: '0.9rem' }}>
+                                    <span>{new Date(item.date_created).getFullYear()}</span>
+                                    <span>•</span>
+                                    <span style={{ color: '#4f46e5', fontWeight: 600 }}>{item.source}</span>
+                                </div>
                             </div>
 
-                            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', margin: '1rem 0' }}>
-                                {item.keywords?.map(kw => (
-                                    <span key={kw} style={{
-                                        fontSize: '0.8rem',
-                                        padding: '0.3rem 0.8rem',
-                                        backgroundColor: 'var(--accent-primary)',
-                                        color: 'white',
-                                        borderRadius: '16px',
-                                        boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-                                    }}>
-                                        {kw}
-                                    </span>
-                                ))}
-                            </div>
+                            {/* 2. SCROLLABLE BODY */}
+                            <div style={{
+                                padding: isMobile ? '20px' : '24px 48px 48px 48px',
+                                overflowY: 'auto',
+                                scrollbarWidth: 'thin'
+                            }}>
+                                <p style={{
+                                    fontSize: '1.1rem',
+                                    lineHeight: 1.8,
+                                    color: 'rgba(255,255,255,0.7)',
+                                    margin: 0,
+                                    whiteSpace: 'pre-wrap'
+                                }}>
+                                    {item.description || "No description provided."}
+                                </p>
 
-                            <div className="description-container" style={{ marginTop: '1rem', lineHeight: '1.6', fontSize: '1rem', flex: 1 }}>
-                                <h3 style={{ marginBottom: '0.5rem', color: 'var(--text-secondary)', fontSize: '1.1rem' }}>Description</h3>
-                                <p style={{ whiteSpace: 'pre-wrap' }}>{item.description || 'No description available for this image.'}</p>
+                                {item.keywords && (
+                                    <div style={{ marginTop: '32px', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                                        {item.keywords.map(kw => (
+                                            <span key={kw} style={{
+                                                padding: '6px 12px',
+                                                background: 'rgba(255,255,255,0.05)',
+                                                borderRadius: '8px',
+                                                fontSize: '0.8rem',
+                                                color: 'rgba(255,255,255,0.4)',
+                                                border: '1px solid rgba(255,255,255,0.1)'
+                                            }}>
+                                                #{kw}
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </motion.div>
