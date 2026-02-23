@@ -5,9 +5,10 @@ import type { NasaImageItem } from '../../hooks/useNasaData';
 interface ImageCardProps {
     item: NasaImageItem;
     style: React.CSSProperties;
+    onClick: (item: NasaImageItem) => void;
 }
 
-export const ImageCard: React.FC<ImageCardProps> = memo(({ item, style }) => {
+export const ImageCard: React.FC<ImageCardProps> = memo(({ item, style, onClick }) => {
     return (
         <div style={{ ...style, padding: '0.5rem' }}>
             <motion.div
@@ -23,6 +24,7 @@ export const ImageCard: React.FC<ImageCardProps> = memo(({ item, style }) => {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3 }}
                 whileHover={{ scale: 1.02 }}
+                onClick={() => onClick(item)}
             >
                 <div style={{ height: '55%', overflow: 'hidden' }}>
                     <img

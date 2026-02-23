@@ -1,9 +1,10 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { FixedSizeGrid } from 'react-window';
 import type { NasaImageItem } from '../../hooks/useNasaData';
 import { ImageCard } from './ImageCard';
 import { useElementSize } from '../../hooks/useElementSize';
 import { motion } from 'framer-motion';
+import { ImageDetailsModal } from './ImageDetailsModal';
 
 interface GalleryBoardProps {
     images: NasaImageItem[];
@@ -17,6 +18,7 @@ const ROW_HEIGHT = 350;
 
 const GalleryBoard: React.FC<GalleryBoardProps> = ({ images, loading, hasMore, loadMore }) => {
     const [ref, size] = useElementSize<HTMLDivElement>();
+    const [selectedImage, setSelectedImage] = useState<NasaImageItem | null>(null);
 
     // Use useMemo for expensive derived dimensions
     const columnCount = useMemo(() => {
@@ -52,7 +54,7 @@ const GalleryBoard: React.FC<GalleryBoardProps> = ({ images, loading, hasMore, l
         const item = images[itemIndex];
         if (!item) return null;
 
-        return <ImageCard item={item} style={style} />;
+        return <ImageCard item={item} style={style} onClick={setSelectedImage} />;
     }, [images, columnCount, hasMore, loading, loadMore]);
 
     return (
@@ -82,6 +84,11 @@ const GalleryBoard: React.FC<GalleryBoardProps> = ({ images, loading, hasMore, l
                     {Cell as any}
                 </FixedSizeGrid>
             )}
+
+            <ImageDetailsModal
+                item={selectedImage}
+                onClose={() => setSelectedImage(null)}
+            />
         </motion.div>
     );
 };

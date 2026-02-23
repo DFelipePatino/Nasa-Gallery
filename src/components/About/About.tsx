@@ -53,7 +53,8 @@ export const About: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: 'easeOut' }}
         >
-            <AccordionItem title="About the Creator" defaultExpanded={true}>
+            <div className="creator-section" style={{ padding: '1.5rem', marginBottom: '1rem', backgroundColor: 'rgba(255, 255, 255, 0.03)', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                <h2 style={{ marginBottom: '1.5rem', fontSize: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem' }}>About the Creator</h2>
                 <div className="creator-profile">
                     <img
                         src="/images/about-pic.png"
@@ -75,7 +76,7 @@ export const About: React.FC = () => {
                         </div>
                     </div>
                 </div>
-            </AccordionItem>
+            </div>
 
             <AccordionItem title="Project README" defaultExpanded={false}>
                 <div className="markdown-content">
