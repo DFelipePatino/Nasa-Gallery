@@ -16,7 +16,7 @@ export type FilterAction =
     | { type: 'RESET_FILTERS' };
 
 const initialState: FilterState = {
-    query: 'space',
+    query: '',
     yearStart: '1920',
     yearEnd: new Date().getFullYear().toString(),
     dynamicFields: [],
