@@ -59,7 +59,7 @@ export const ImageDetailsModal: React.FC<ImageDetailsModalProps> = ({ item, onCl
                             width: '100%',
                             maxWidth: '1280px',
                             // Use vh with a safe margin to ensure it NEVER leaves the screen
-                            height: isMobile ? '100%' : '80vh',
+                            height: isMobile ? '100%' : '55vh',
                             display: 'flex',
                             flexDirection: isMobile ? 'column' : 'row',
                             backgroundColor: '#0a0a0f',
@@ -68,7 +68,9 @@ export const ImageDetailsModal: React.FC<ImageDetailsModalProps> = ({ item, onCl
                             position: 'relative',
                             boxShadow: '0 0 100px rgba(0,0,0,0.8)',
                             border: '1px solid rgba(255,255,255,0.1)',
-                            boxSizing: 'border-box'
+                            boxSizing: 'border-box',
+                            overflowY: 'auto',
+                            scrollbarWidth: 'thin'
                         }}
                         initial={isMobile ? { y: '100%' } : { opacity: 0, y: 20 }}
                         animate={{ y: 0, opacity: 1 }}
@@ -126,11 +128,11 @@ export const ImageDetailsModal: React.FC<ImageDetailsModalProps> = ({ item, onCl
 
                             {/* 1. LOCKED HEADER */}
                             <div style={{
-                                padding: isMobile ? '20px' : '48px 48px 24px 48px',
+                                padding: '20px',
                                 borderBottom: '1px solid rgba(255,255,255,0.05)'
                             }}>
                                 <h2 style={{
-                                    fontSize: isMobile ? '1.5rem' : '2.5rem',
+                                    fontSize: isMobile ? '1.5rem' : '1.8rem',
                                     margin: 0,
                                     color: '#fff',
                                     fontWeight: 700,
@@ -149,7 +151,7 @@ export const ImageDetailsModal: React.FC<ImageDetailsModalProps> = ({ item, onCl
 
                             {/* 2. SCROLLABLE BODY */}
                             <div style={{
-                                padding: isMobile ? '20px' : '24px 48px 48px 48px',
+                                padding: '20px',
                                 overflowY: 'auto',
                                 scrollbarWidth: 'thin'
                             }}>

@@ -19,7 +19,7 @@ interface AccordionItemProps {
 }
 
 // --- Sub-components ---
-const AccordionItem: React.FC<AccordionItemProps> = ({ title, children, defaultExpanded = false }) => {
+const AccordionItem: React.FC<AccordionItemProps> = ({ title, children, defaultExpanded = true }) => {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   return (
     <div className="accordion-item">
