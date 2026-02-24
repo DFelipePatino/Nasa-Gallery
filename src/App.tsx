@@ -16,14 +16,15 @@ interface AccordionItemProps {
   title: string;
   children: React.ReactNode;
   defaultExpanded?: boolean;
+  onClick: () => void;
 }
 
 // --- Sub-components ---
-const AccordionItem: React.FC<AccordionItemProps> = ({ title, children, defaultExpanded = true }) => {
+const AccordionItem: React.FC<AccordionItemProps> = ({ title, children, defaultExpanded = true, onClick }) => {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   return (
     <div className="accordion-item">
-      <button className="accordion-header" onClick={() => setIsExpanded(!isExpanded)} style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+      <button className="accordion-header" onClick={() => { setIsExpanded(!isExpanded); onClick(); }} style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
         <span>{title}</span>
         <motion.div animate={{ rotate: isExpanded ? 180 : 0 }}>
           <ChevronDown size={24} />
@@ -57,7 +58,10 @@ function App() {
   const [currentView, setCurrentView] = useState<'gallery' | 'about'>('gallery');
   const filterManager = useGalleryFilters();
   const dataManager = useNasaData(filterManager.filters);
-
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const clickHandler = () => {
+    setIsSearchExpanded(!isSearchExpanded)
+  }
   return (
     <div className="app-container">
       <Header currentView={currentView} setView={setCurrentView} />
@@ -75,7 +79,9 @@ function App() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
-              <AccordionItem title="Search Filters" defaultExpanded={false}>
+              <AccordionItem title="Search Filters" defaultExpanded={false}
+                onClick={clickHandler}
+              >
                 <SearchPanel
                   filters={filterManager.filters}
                   setQuery={filterManager.setQuery}
@@ -86,6 +92,7 @@ function App() {
               </AccordionItem>
 
               <GalleryBoard
+                isSearchExpanded={isSearchExpanded}
                 images={dataManager.images}
                 loading={dataManager.loading}
                 hasMore={dataManager.hasMore}

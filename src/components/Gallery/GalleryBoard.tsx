@@ -11,12 +11,13 @@ interface GalleryBoardProps {
     loading: boolean;
     hasMore: boolean;
     loadMore: () => void;
+    isSearchExpanded: boolean;
 }
 
 const COLUMN_WIDTH = 300;
 const ROW_HEIGHT = 350;
 
-const GalleryBoard: React.FC<GalleryBoardProps> = ({ images, loading, hasMore, loadMore }) => {
+const GalleryBoard: React.FC<GalleryBoardProps> = ({ images, loading, hasMore, loadMore, isSearchExpanded }) => {
     const [ref, size] = useElementSize<HTMLDivElement>();
     const [selectedImage, setSelectedImage] = useState<NasaImageItem | null>(null);
 
@@ -57,11 +58,13 @@ const GalleryBoard: React.FC<GalleryBoardProps> = ({ images, loading, hasMore, l
         return <ImageCard item={item} style={style} onClick={setSelectedImage} />;
     }, [images, columnCount, hasMore, loading, loadMore]);
 
+    const height = isSearchExpanded ? '460px' : '670px';
+
     return (
         <motion.div
             ref={ref}
             className="glass-panel"
-            style={{ flex: 1, height: '100%', minHeight: '500px', overflow: 'hidden', padding: '0.5rem' }}
+            style={{ flex: 1, height: '100%', minHeight: height, overflow: 'hidden', padding: '0.5rem' }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
